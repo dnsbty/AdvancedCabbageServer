@@ -1,0 +1,8 @@
+node_modules
+data
+config.json
+.env
+*.sublime-project
+*.sublime-workspace
+npm-debug.log
+*.paw
