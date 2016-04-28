@@ -55,4 +55,26 @@ router.post('/join', function(req, res, next) {
 	});
 });
 
+/* GET list of players in the game. */
+router.get('/:game/players', function(req, res, next) {
+	res.json({
+		players: req.game.players,
+		started: req.game.started
+	});
+});
+
+/* Get game object when a game param is supplied */
+router.param('game', function(req, res, next, id) {
+	var query = Game.findById(id);
+	query.exec(function (err, game){
+		if (err)
+			return next(err);
+		if (!game)
+			return next(new Error('The game could not be found'));
+
+		req.game = game;
+		return next();
+	});
+});
+
 module.exports = router;

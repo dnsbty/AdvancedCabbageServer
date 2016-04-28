@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var GameSchema = new mongoose.Schema({
 	code: String,
 	created: { type: Date, default: Date.now },
+	started: { type: Boolean, default: false },
 	numPlayers: Number,
 	players: [{
 		name: String,
