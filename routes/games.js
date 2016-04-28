@@ -24,6 +24,7 @@ router.post('/', function(req, res, next) {
 		number: 0,
 		creator: true
 	});
+	game.numPlayers = 1;
 
 	// TODO: make sure the generated code is unique
 	game.save();
@@ -67,12 +68,38 @@ router.get('/:game/players', function(req, res, next) {
 router.post('/:game/start', function(req, res, next) {
 	// mark the game as started in the database
 	req.game.started = true;
+
+	// fill the words array with empty objects for later
+	for (var i = 0; i < req.game.numPlayers; i++) {
+		req.game.words.push({});
+	}
+
+	// save the game
 	req.game.save();
 
 	// return a json object saying the game has started
 	res.json({
 		started: true
 	});
+});
+
+/* POST new word to a game. */
+router.post('/:game/words', function(req, res, next) {
+	// make sure we have the player number for the player submitting the word
+	if (req.body.player === null)
+		return res.status(400).json({ message: 'No player was provided.' });
+
+	// make sure we actually have a word
+	if (!req.body.word || req.body.word == '')
+		return res.status(400).json({ message: 'No word was provided.' });
+
+	// put the word into the array
+	req.game.words[req.body.creator].creator = req.body.creator;
+	req.game.words[req.body.creator].word = req.body.word;
+	req.game.words[req.body.creator].created = Date.now;
+	req.game.save();
+
+	res.json(req.game.words);
 });
 
 /* Get game object when a game param is supplied */

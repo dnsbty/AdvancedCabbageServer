@@ -13,7 +13,7 @@ var GameSchema = new mongoose.Schema({
 	words: [{
 		creator: Number,
 		word: String,
-		numAnswers: Number,
+		numAnswers: { type: Number, default: 0 },
 		answers: [{
 			creator: Number,
 			isDrawing: { type: Boolean, default: false },
@@ -36,6 +36,7 @@ GameSchema.methods.addPlayer = function (name) {
 		creator: false
 	};
 	this.players.push(newPlayer);
+	this.numPlayers++;
 }
  
 mongoose.model('Game', GameSchema);
