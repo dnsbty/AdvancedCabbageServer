@@ -30,4 +30,29 @@ router.post('/', function(req, res, next) {
 	res.json(game);
 });
 
+/* POST new player to game. */
+router.post('/join', function(req, res, next) {
+	// make sure that a game code and player name were both specified
+	if (!req.body.code || req.body.code == '')
+		return res.status(400).json({ message: 'No game code was provided.' });
+	if (!req.body.name || req.body.name == '')
+		return res.status(400).json({ message: 'No player name was provided.' });
+
+	// get the game specified by the four digit code
+	Game.findOne({ code: req.body.code }, function (err, game) {
+		if (err)
+			next(err);
+
+		// make sure that we found a game with that code
+		if (game == null)
+			return res.status(404).json({ message: 'The game could not be found.' });
+
+		// add the new player to the game
+		game.addPlayer(req.body.name);
+		game.save();
+
+		res.json(game);
+	});
+});
+
 module.exports = router;

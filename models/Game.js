@@ -27,5 +27,14 @@ GameSchema.methods.generateCode = function () {
 	// generate a 4 digit alphanumeric join code
 	return Math.random().toString(36).slice(2,6).toUpperCase();
 }
+
+GameSchema.methods.addPlayer = function (name) {
+	var newPlayer = {
+		name: name,
+		number: this.players.length,
+		creator: false
+	};
+	this.players.push(newPlayer);
+}
  
 mongoose.model('Game', GameSchema);
