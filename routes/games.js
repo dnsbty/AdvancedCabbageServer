@@ -66,12 +66,12 @@ router.get('/:game/players', function(req, res, next) {
 /* POST start game command. */
 router.post('/:game/start', function(req, res, next) {
 	// mark the game as started in the database
-	game.started = true;
-	game.save();
+	req.game.started = true;
+	req.game.save();
 
 	// return a json object saying the game has started
 	res.json({
-		started: true;
+		started: true
 	});
 });
 
