@@ -166,6 +166,11 @@ router.post('/:game/words/:word/answers', multer({
 	res.json(req.game);
 });
 
+/* GET all words. */
+router.get('/:game/words', function(req, res, next) {
+	res.json(req.game.words);
+});
+
 /* Get game object when a game param is supplied */
 router.param('game', function(req, res, next, id) {
 	var query = Game.findById(id);
