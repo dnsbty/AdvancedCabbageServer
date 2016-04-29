@@ -107,6 +107,24 @@ router.post('/:game/words', function(req, res, next) {
 	res.json(req.game.words);
 });
 
+/* GET a word. */
+router.get('/:game/words/:word', function(req, res, next) {
+	// make sure a valid word was specified
+	if (req.params.word == null || req.params.word > req.game.numPlayers)
+		return res.status(400).json({ message: 'No valid word was specified.' });
+
+	// check if the word is in use
+	if (req.game.words[req.params.word].inUse)
+		res.status(423).json({ message: 'The requested word is still in use.' });
+
+	// return the word if it's ready to be used
+	res.json(req.game.words[req.params.word]);
+
+	// mark the word as in use
+	req.game.words[req.params.word].inUse = true;
+	req.game.save();
+});
+
 /* POST new answer to a word. */
 router.post('/:game/words/:word/answers', multer({
 	dest: './public/uploads/tmp',
@@ -146,7 +164,7 @@ router.post('/:game/words/:word/answers', multer({
 	req.game.words[req.params.word].answers.push(answer);
 	req.game.save();
 	res.json(req.game);
-})
+});
 
 /* Get game object when a game param is supplied */
 router.param('game', function(req, res, next, id) {
