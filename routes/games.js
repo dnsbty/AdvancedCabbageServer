@@ -5,14 +5,28 @@ var Game = mongoose.model('Game');
 var multer = require('multer');
 var fs = require('fs');
 
-/* GET list of all games. */
+/**
+ * @api {get} /games Get Games List
+ * @apiName GetGames
+ * @apiGroup Games
+ *
+ * @apiSuccess {Array} games Array of games.
+ */
 router.get('/', function(req, res, next) {
 	Game.find({}, function(err, games) {
 		res.json(games);
 	});
 });
 
-/* POST new game. */
+/**
+ * @api {post} /games Create New Game
+ * @apiName CreateGame
+ * @apiGroup Games
+ *
+ * @apiParam {String} name Name of the creator.
+ *
+ * @apiSuccess {Object} game The created game object.
+ */
 router.post('/', function(req, res, next) {
 	// make sure that a player name was provided
 	if (!req.body.name || req.body.name == '')
@@ -36,7 +50,16 @@ router.post('/', function(req, res, next) {
 	res.json(game);
 });
 
-/* POST new player to game. */
+/**
+ * @api {post} /games/join Join a Game
+ * @apiName JoinGame
+ * @apiGroup Players
+ *
+ * @apiParam {String} code Game join code.
+ * @apiParam {String} name Name of the player.
+ *
+ * @apiSuccess {Object} game The joined game object.
+ */
 router.post('/join', function(req, res, next) {
 	// make sure that a game code and player name were both specified
 	if (!req.body.code || req.body.code == '')
@@ -61,7 +84,16 @@ router.post('/join', function(req, res, next) {
 	});
 });
 
-/* GET list of players in the game. */
+/**
+ * @api {get} /game/:game/players Request Player List
+ * @apiName GetPlayers
+ * @apiGroup Players
+ *
+ * @apiParam {String} id Game ID.
+ *
+ * @apiSuccess {Array} players List of players.
+ * @apiSuccess {Boolean} started  Whether or not the game has started.
+ */
 router.get('/:game/players', function(req, res, next) {
 	res.json({
 		players: req.game.players,
@@ -69,7 +101,15 @@ router.get('/:game/players', function(req, res, next) {
 	});
 });
 
-/* POST start game command. */
+/**
+ * @api {post} /games/:id/start Start the Game
+ * @apiName StartGame
+ * @apiGroup Games
+ *
+ * @apiParam {String} id Game ID.
+ *
+ * @apiSuccess {Boolean} started Whether or not the game started.
+ */
 router.post('/:game/start', function(req, res, next) {
 	// mark the game as started in the database
 	req.game.started = true;
@@ -88,7 +128,17 @@ router.post('/:game/start', function(req, res, next) {
 	});
 });
 
-/* POST new word to a game. */
+/**
+ * @api {post} /game/:id/words Submit Word
+ * @apiName SubmitWord
+ * @apiGroup Words
+ *
+ * @apiParam {String} id Game ID.
+ * @apiParam {Number} creator Number of the player who submitted the word.
+ * @apiParam {String} word The word to be submitted.
+ *
+ * @apiSuccess {Array} words Array of words submitted.
+ */
 router.post('/:game/words', function(req, res, next) {
 	// make sure we have the player number for the player submitting the word
 	if (req.body.creator == null || req.body.creator > req.game.numPlayers)
@@ -107,7 +157,16 @@ router.post('/:game/words', function(req, res, next) {
 	res.json(req.game.words);
 });
 
-/* GET a word. */
+/**
+ * @api {get} /game/:gameID/words/:wordID Request Word information
+ * @apiName GetWord
+ * @apiGroup Words
+ *
+ * @apiParam {String} gameID Game ID.
+ * @apiParam {Number} wordID Word number.
+ *
+ * @apiSuccess {Object} word Requested word.
+ */
 router.get('/:game/words/:word', function(req, res, next) {
 	// make sure a valid word was specified
 	if (req.params.word == null || req.params.word > req.game.numPlayers)
@@ -125,7 +184,19 @@ router.get('/:game/words/:word', function(req, res, next) {
 	req.game.save();
 });
 
-/* POST new answer to a word. */
+/**
+ * @api {post} /games/:gameID/words/:wordID/answers Submit Answer
+ * @apiName SubmitAnswer
+ * @apiGroup Answers
+ *
+ * @apiParam {String} gameID Game ID.
+ * @apiParam {Number} wordID Number of the word.
+ * @apiParam {Number} player The number of the player submitting the answer.
+ * @apiParam {File} drawing The drawing being submitted (optional).
+ * @apiParam {String} word The word being submitted as an answer (optional).
+ *
+ * @apiSuccess {Object} game The game object.
+ */
 router.post('/:game/words/:word/answers', multer({
 	dest: './public/uploads/tmp',
 	limits: {
@@ -171,7 +242,15 @@ router.post('/:game/words/:word/answers', multer({
 	res.json(req.game);
 });
 
-/* GET all words. */
+/**
+ * @api {get} /games/:gameID/words Get Word List
+ * @apiName GetWords
+ * @apiGroup Words
+ *
+ * @apiParam {String} gameID Game ID.
+ *
+ * @apiSuccess {Array} words Array of word objects.
+ */
 router.get('/:game/words', function(req, res, next) {
 	res.json(req.game.words);
 });

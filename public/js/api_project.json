@@ -1,0 +1,1 @@
+{  "name": "Advanced Cabbage",  "version": "0.1.0",  "description": "RESTful API for the Advanced Cabbage game",  "sampleUrl": false,  "apidoc": "0.2.0",  "generator": {    "name": "apidoc",    "time": "2016-04-29T20:12:41.982Z",    "url": "http://apidocjs.com",    "version": "0.16.1"  }}
