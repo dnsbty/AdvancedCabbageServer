@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 var Game = mongoose.model('Game');
+var multer = require('multer');
+var fs = require('fs');
 
 /* GET list of all games. */
 router.get('/', function(req, res, next) {
@@ -28,6 +30,9 @@ router.post('/', function(req, res, next) {
 
 	// TODO: make sure the generated code is unique
 	game.save();
+
+	// create a folder for uploaded drawings for this game
+	fs.mkdir('public/uploads/'+game._id);
 	res.json(game);
 });
 
@@ -86,8 +91,8 @@ router.post('/:game/start', function(req, res, next) {
 /* POST new word to a game. */
 router.post('/:game/words', function(req, res, next) {
 	// make sure we have the player number for the player submitting the word
-	if (req.body.player === null)
-		return res.status(400).json({ message: 'No player was provided.' });
+	if (req.body.creator == null || req.body.creator > req.game.numPlayers)
+		return res.status(400).json({ message: 'No valid player was provided.' });
 
 	// make sure we actually have a word
 	if (!req.body.word || req.body.word == '')
@@ -101,6 +106,47 @@ router.post('/:game/words', function(req, res, next) {
 
 	res.json(req.game.words);
 });
+
+/* POST new answer to a word. */
+router.post('/:game/words/:word/answers', multer({
+	dest: './public/uploads/tmp',
+	limits: {
+		fileSize: 1000000,
+		files: 1
+	}}).single('drawing'), function(req, res, next) {
+	// make sure we have the player number for the player submitting the word
+	if (req.body.player === null)
+		return res.status(400).json({ message: 'No player was provided.' });
+
+	// check if we have a drawing or just a word
+	if (req.file === null) {
+		// make sure we have a word if we don't have a drawing
+		if (!req.body.word || req.body.word == '')
+			return res.status(400).json({ message: 'No word or drawing was provided.' });
+		isDrawing = false;
+	} else {
+		// move the image from the temp folder to the folder for the game
+		fs.rename(req.file.path,'public/uploads/'+req.game._id+'/'+req.file.filename);
+		req.file.path = 'public/uploads/'+req.game._id+'/'+req.file.filename;
+		isDrawing = true;
+	}
+
+	// create the answer object
+	var answer = {
+		creator: req.body.player,
+		isDrawing: isDrawing
+	};
+
+	if (isDrawing) {
+		answer.drawingFilename = req.file.filename;
+	}
+	else {
+		answer.word = req.body.word;
+	}
+	req.game.words[req.params.word].answers.push(answer);
+	req.game.save();
+	res.json(req.game);
+})
 
 /* Get game object when a game param is supplied */
 router.param('game', function(req, res, next, id) {

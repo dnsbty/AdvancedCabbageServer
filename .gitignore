@@ -6,3 +6,4 @@ config.json
 *.sublime-workspace
 npm-debug.log
 *.paw
+public/uploads/*

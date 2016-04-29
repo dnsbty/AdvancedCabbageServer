@@ -18,7 +18,7 @@ var GameSchema = new mongoose.Schema({
 			creator: Number,
 			isDrawing: { type: Boolean, default: false },
 			word: String,
-			drawingUrl: String
+			drawingFilename: String
 		}],
 		created: { type: Date, default: Date.now }
 	}]
