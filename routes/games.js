@@ -76,6 +76,10 @@ router.post('/join', function(req, res, next) {
 		if (game == null)
 			return res.status(404).json({ message: 'The game could not be found.' });
 
+		// make sure the game hasn't already started
+		if (game.started == true)
+			return res.status(403).json({ message: 'The game has already started.' });
+
 		// add the new player to the game
 		game.addPlayer(req.body.name);
 		game.save();
