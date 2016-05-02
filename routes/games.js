@@ -212,7 +212,7 @@ router.post('/:game/words/:word/answers', multer({
 		return res.status(400).json({ message: 'No player was provided.' });
 
 	// check if we have a drawing or just a word
-	if (req.file === null) {
+	if (req.file == null) {
 		// make sure we have a word if we don't have a drawing
 		if (!req.body.word || req.body.word == '')
 			return res.status(400).json({ message: 'No word or drawing was provided.' });
