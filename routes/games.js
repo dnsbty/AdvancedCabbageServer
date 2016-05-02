@@ -207,9 +207,9 @@ router.post('/:game/words/:word/answers', multer({
 		fileSize: 1000000,
 		files: 1
 	}}).single('drawing'), function(req, res, next) {
-	// make sure we have the player number for the player submitting the word
-	if (req.body.player === null)
-		return res.status(400).json({ message: 'No player was provided.' });
+	// make sure we have the player number for the player submitting the answer
+	if (req.body.player == null || req.body.player > req.game.numPlayers)
+		return res.status(400).json({ message: 'No valid player was provided.' });
 
 	// check if we have a drawing or just a word
 	if (req.file == null) {
