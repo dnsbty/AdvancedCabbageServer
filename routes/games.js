@@ -155,7 +155,7 @@ router.post('/:game/words', function(req, res, next) {
 	// put the word into the array
 	req.game.words[req.body.creator].creator = req.body.creator;
 	req.game.words[req.body.creator].word = req.body.word;
-	req.game.words[req.body.creator].created = Date.now;
+	req.game.words[req.body.creator].created = Date.now();
 	req.game.save();
 
 	res.json(req.game.words);
