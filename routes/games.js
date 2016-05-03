@@ -176,15 +176,32 @@ router.get('/:game/words/:word', function(req, res, next) {
 	if (req.params.word == null || req.params.word > req.game.numPlayers)
 		return res.status(400).json({ message: 'No valid word was specified.' });
 
+	// return the word
+	res.json(req.game.words[req.params.word]);
+});
+
+/**
+ * @api {get} /games/:gameID/words/:wordID/claim Claim word for answering
+ * @apiName ClaimWord
+ * @apiGroup Words
+ *
+ * @apiParam {String} gameID Game ID.
+ * @apiParam {Number} wordID Word number.
+ *
+ * @apiSuccess {Object} word Word object that was claimed.
+ */
+router.post('/:game/words/:word/claim', function(req, res, next) {
+	// make sure a valid word was specified
+	if (req.params.word == null || req.params.word > req.game.numPlayers)
+		return res.status(400).json({ message: 'No valid word was specified.' });
+
 	// check if the word is in use
 	if (req.game.words[req.params.word].inUse)
 		res.status(423).json({ message: 'The requested word is still in use.' });
 
-	// return the word if it's ready to be used
-	res.json(req.game.words[req.params.word]);
-
 	// mark the word as in use
 	req.game.words[req.params.word].inUse = true;
+	res.json(req.game.words[req.params.word]);
 	req.game.save();
 });
 
