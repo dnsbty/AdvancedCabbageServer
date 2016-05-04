@@ -254,6 +254,7 @@ router.post('/:game/words/:word/answers', multer({
 		answer.word = req.body.word;
 	}
 	req.game.words[req.params.word].answers.push(answer);
+	req.game.words[req.params.word].numAnswers++;
 
 	// unlock the word so the next player can go
 	req.game.words[req.params.word].inUse = false;
