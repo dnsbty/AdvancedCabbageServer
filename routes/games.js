@@ -120,7 +120,7 @@ router.post('/:game/start', function(req, res, next) {
 
 	// fill the words array with empty objects for later
 	for (var i = 0; i < req.game.numPlayers; i++) {
-		req.game.words.push({});
+		req.game.words.push({ creator: i });
 	}
 
 	// save the game

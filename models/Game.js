@@ -11,7 +11,7 @@ var GameSchema = new mongoose.Schema({
 		creator: { type: Boolean, default: false }
 	}],
 	words: [{
-		creator: Number,
+		creator: { type: Number, default: 0 },
 		word: { type: String, default: '' },
 		numAnswers: { type: Number, default: 0 },
 		answers: [{
